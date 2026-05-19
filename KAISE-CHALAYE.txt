@@ -1,0 +1,63 @@
+╔══════════════════════════════════════════════════════════════╗
+║  KYUN BROWSER MEIN "Can't connect" AA RAHA HAI?             ║
+╚══════════════════════════════════════════════════════════════╝
+
+  localhost:3000 = tumhara computer par chalne wala program
+  
+  Browser sirf DEKHNE ke liye hai.
+  Program pehle START karna padta hai.
+  
+  Agar koi program port 3000 par nahi chal raha
+  → browser hamesha "refused / can't connect" dikhayega.
+
+  Right-click se URL khulna = server start NAHI karta.
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  TUMHARI SITUATION (screenshot analysis)                     ║
+╚══════════════════════════════════════════════════════════════╝
+
+  1) Pehle: Node.js nahi tha → START-APP turant band ho gaya
+  2) Ab: Browser fail = port 3000 par WEB server nahi chal raha
+  3) Project mein node_modules abhi bhi nahi = npm install complete nahi hua
+     YA install ke baad npm run dev start nahi hua / window band kar di
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  SAHI TAREEKA (beginner) - ORDER MAT BADLO                  ║
+╚══════════════════════════════════════════════════════════════╝
+
+  A) Node.js LTS install → PC RESTART
+     Check: cmd mein "node -v" → version number
+
+  B) Docker Desktop install → OPEN rakho (running)
+
+  C) Double-click: CHECK-SETUP.bat
+     Sab [OK] dikhe to aage
+
+  D) Double-click: START-APP.bat
+     - 5-10 minute wait (npm install)
+     - 2 windows khulengi: PSS-API aur PSS-WEB
+     - PSS-WEB mein likha aayega: "Ready" ya "localhost:3000"
+     - TAB browser kholo
+
+  E) Login: admin / admin123
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  GALTI MAT KARNA                                             ║
+╚══════════════════════════════════════════════════════════════╝
+
+  X  Sirf browser link khulna
+  X  START-APP ke baad turant Enter → band (install incomplete)
+  X  PSS-API / PSS-WEB windows band karna
+  X  Node install ke bina dubara try
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  KAISE PATA CHALE APP CHAL RAHI HAI?                         ║
+╚══════════════════════════════════════════════════════════════╝
+
+  PSS-WEB window: "Ready in ..." ya "compiled"
+  Browser: http://localhost:4000/health → {"ok":true}
+  Browser: http://localhost:3000/login → login page

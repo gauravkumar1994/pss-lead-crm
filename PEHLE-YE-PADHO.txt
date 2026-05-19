@@ -1,0 +1,68 @@
+PSS Lead CRM - BEGINNER GUIDE (Hindi + English)
+================================================
+
+TUMHARI SCREENSHOT KA MATLAB:
+-----------------------------
+"[ERROR] Node.js installed nahi hai" = Tumhare computer par Node.js program
+install nahi hai. Bina iske CRM NAHI chalegi.
+
+"Enter dabaya to window band" = Normal hai. Script ne error dikhaya,
+"Press any key" likha, Enter = window band. Galti tumhari nahi - pehle
+Node install karna tha.
+
+
+STEP 1 - NODE.JS INSTALL (ZAROORI - PEHLA KAAM)
+------------------------------------------------
+1. Browser kholo
+2. Jao: https://nodejs.org
+3. Bada GREEN button: "20.x.x LTS" (Recommended) - Download
+4. Download hui file (.msi) par double-click
+5. Next, Next, Install (sab default theek hai)
+6. Install complete hone ke baad:
+   - Laptop RESTART karo  (best)
+   YA
+   - Sab CMD/terminal windows band karo
+
+
+STEP 2 - CHECK NODE INSTALL HUA YA NAHI
+----------------------------------------
+1. Windows key dabao, type: cmd , Enter
+2. Black window mein type karo:
+
+   node -v
+
+3. Agar dikhe: v20.11.0 (koi number) = SUCCESS
+4. Agar "not recognized" = Node install dubara karo + restart
+
+
+STEP 3 - DOCKER DESKTOP (DATABASE KE LIYE)
+-------------------------------------------
+1. https://www.docker.com/products/docker-desktop/
+2. Download Docker Desktop for Windows
+3. Install karo, PC restart
+4. Docker Desktop app kholo - neeche "Engine running" green ho
+
+
+STEP 4 - CRM CHALAO
+--------------------
+Folder kholo:
+  C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm
+
+Double-click:
+  START-APP.bat
+
+Pehli baar 5-10 minute lag sakta hai (download).
+
+Jab likha aaye "AB APP CHAL RAHI HAI" tab browser:
+  http://localhost:3000/login
+
+Login:
+  admin
+  admin123
+
+*** KALI CMD WINDOW BAND MAT KARNA jab tak app use kar rahe ho ***
+
+
+AGAR PHIR BHI PROBLEM
+---------------------
+START-APP.bat chalao, screenshot bhejo - poori black window ka.

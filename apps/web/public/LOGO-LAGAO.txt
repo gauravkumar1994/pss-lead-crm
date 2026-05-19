@@ -1,0 +1,13 @@
+BEST QUALITY LOGO (sidebar ke liye):
+
+1. Sirf brain + PSS icon crop karo (square), background TRANSPARENT
+2. Size: 128x128 ya 256x256 pixels
+3. Save as:  pss-logo-mark.png
+4. Folder:  apps\web\public\pss-logo-mark.png
+
+(Optional full logo):  pss-logo.png  (same folder)
+
+Phir PSS-WEB restart + browser Ctrl+Shift+R
+
+Agar poora vertical logo (PINNACLE text ke sath) use karoge chhote box mein,
+to blurry/ugly dikhega — sirf icon wala file use karo.

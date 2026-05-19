@@ -1,0 +1,56 @@
+================================================================================
+  ERROR: "src refspec main does not match any" — KYA MATLAB?
+================================================================================
+
+Matlab: GitHub ko "main" branch bhejni thi, lekin tumhare PC par
+"main" branch bani hi NAHI — kyunki COMMIT fail ho gayi (chupke se).
+
+Sabse common reason:
+  Git install ke baad pehli baar NAME + EMAIL set nahi hote
+  → git commit fail
+  → git push error: main does not match any
+
+================================================================================
+  FIX — Ye commands CMD mein chalao (copy-paste)
+================================================================================
+
+cd C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm
+
+git config --global user.name "gauravkumar1994"
+git config --global user.email "gauravkumar1994@users.noreply.github.com"
+
+git init
+git add .
+git commit -m "PSS Lead CRM - first commit"
+git branch -M main
+git remote remove origin
+git remote add origin https://github.com/gauravkumar1994/pss-lead-crm.git
+git push -u origin main
+
+================================================================================
+  PUSH par login
+================================================================================
+
+Username: gauravkumar1994
+Password: TOKEN (GitHub website password mat daalna!)
+
+Token banana:
+1) https://github.com/settings/tokens
+2) Generate new token (classic)
+3) Note: pss-crm
+4) Expiration: 90 days
+5) Scope: tick "repo" (full control)
+6) Generate → COPY token
+7) CMD push par password ki jagah TOKEN paste
+
+================================================================================
+  SUCCESS check
+================================================================================
+
+Browser: https://github.com/gauravkumar1994/pss-lead-crm
+
+Folders dikhne chahiye: apps, README.md, render.yaml, etc.
+
+Phir: DEPLOY-ABHI-KARO.txt → Render live URL
+
+================================================================================

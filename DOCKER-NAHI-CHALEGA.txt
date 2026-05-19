@@ -1,0 +1,52 @@
+╔══════════════════════════════════════════════════════════════╗
+║  Docker error: Virtualization support not detected           ║
+╚══════════════════════════════════════════════════════════════╝
+
+MATLAB:
+  Tumhare PC par CPU virtualization BIOS mein OFF hai
+  (ya company laptop par IT ne band kiya hai).
+  Isliye Docker Desktop start nahi hota.
+
+GOOD NEWS:
+  Ab CRM bina Docker ke chalegi!
+  Database = SQLite file (apps\api\prisma\dev.db)
+  Redis = optional (bulk WA bina Redis bhi chalega)
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  AB KYA KARO (Docker mat use karo)                           ║
+╚══════════════════════════════════════════════════════════════╝
+
+  1. PSS-API aur PSS-WEB windows BAND karo (agar khuli hain)
+
+  2. Double-click: START-APP.bat
+     (naya version - Docker check nahi karta)
+
+  3. PSS-WEB mein Ready aane ke baad:
+     http://localhost:3000/login
+     admin / admin123
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  Agar login par database error aaye                          ║
+╚══════════════════════════════════════════════════════════════╝
+
+  Double-click: FIX-DATABASE.bat
+  Phir PSS-API window restart (band karke START-APP dubara)
+
+
+╔══════════════════════════════════════════════════════════════╗
+║  Optional: Virtualization ON (advanced)                      ║
+╚══════════════════════════════════════════════════════════════╝
+
+  1. PC restart → BIOS (F2 / F10 / Del key - laptop pe likha hota hai)
+  2. Find: Intel VT-x / AMD-V / Virtualization → Enabled
+  3. Windows: Turn Windows features on →
+     - Virtual Machine Platform
+     - Windows Subsystem for Linux (WSL)
+  4. Restart
+
+  Company laptop ho to IT admin se pucho — shayad policy se band ho.
+
+  Production server par baad mein PostgreSQL + Docker use kar sakte ho.
+  Abhi local testing ke liye SQLite kaafi hai.

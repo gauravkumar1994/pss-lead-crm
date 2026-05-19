@@ -1,0 +1,86 @@
+================================================================================
+  PSS LEAD CRM — LIVE DEPLOY (Internet par kahi se bhi use)
+  GitHub: https://github.com/gauravkumar1994
+================================================================================
+
+STEP 1 — Code GitHub par daalo
+------------------------------
+1) GitHub.com login → New repository
+   Name: pss-lead-crm
+   Private (recommended for selling) ya Public
+
+2) Project folder mein PowerShell kholo:
+   cd C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm
+
+   git init
+   git add .
+   git commit -m "PSS Lead CRM production ready"
+   git branch -M main
+   git remote add origin https://github.com/gauravkumar1994/pss-lead-crm.git
+   git push -u origin main
+
+   (Pehli baar GitHub username/password ya token maangega)
+
+
+STEP 2 — Render par API + Database (FREE)
+-----------------------------------------
+1) https://render.com → Sign up → Login with GitHub
+
+2) Dashboard → New + → Blueprint
+
+3) Connect repo: gauravkumar1994/pss-lead-crm
+
+4) render.yaml auto detect hoga → Apply
+
+5) Deploy complete hone ke baad 2 URLs milenge:
+   - pss-crm-api.onrender.com   (API)
+   - pss-crm-web.onrender.com   (Website)  ← YE CUSTOMERS KO DO
+
+6) Environment variables SET karo (Render → each service → Environment):
+
+   API service (pss-crm-api):
+   - CORS_ORIGIN = https://pss-crm-web.onrender.com
+   - PUBLIC_API_URL = https://pss-crm-api.onrender.com
+
+   WEB service (pss-crm-web):
+   - NEXT_PUBLIC_API_URL = https://pss-crm-api.onrender.com
+
+7) Manual Deploy / Clear build cache → Redeploy (dono services)
+
+
+STEP 3 — Login (default)
+------------------------
+URL: https://pss-crm-web.onrender.com/login
+
+Admin:  admin / admin123
+Sales:  sales1 / sales123
+
+⚠️ BIKRI se pehle admin password Settings/Users se CHANGE karo!
+
+
+STEP 4 (Optional, faster UI) — Vercel par sirf Website
+------------------------------------------------------
+1) https://vercel.com → Import GitHub repo
+2) Root Directory: apps/web
+3) Environment:
+   NEXT_PUBLIC_API_URL = https://pss-crm-api.onrender.com
+4) Deploy → URL milega jaise: pss-lead-crm.vercel.app
+5) Render API par CORS_ORIGIN = ye naya Vercel URL set karo
+
+
+IMPORTANT — Free tier notes
+---------------------------
+- Render free: 50 sec cold start (pehli request slow) — normal hai
+- Photo upload: server restart par purani photos hat sakti hain (paid disk ya cloud storage baad mein)
+- WhatsApp API: Settings mein UltraMsg / Atoz / Evolution configure karna zaroori
+
+
+Sell karte waqt customer ko do:
+- Live demo URL
+- Admin login (apna password)
+- WhatsApp API unka khud ka connect karein (Settings page)
+
+
+Support: START-APP.bat se local test — deploy ke baad sirf live URL use karo.
+
+================================================================================

@@ -1,0 +1,77 @@
+================================================================================
+  SCREENSHOT ANALYSIS — Kya hua, kya karna hai
+================================================================================
+
+SCREENSHOT 1 (CMD - PUSH-GITHUB.bat):
+  Script ne check kiya: "git" command PC par NAHI mila.
+  Isliye likha: "Git install karo: https://git-scm.com"
+  Matlab: GitHub repo sahi hai, lekin code push karne ke liye
+          pehle GIT software install karna ZAROORI hai.
+
+SCREENSHOT 2 (GitHub):
+  Repo ban gaya — PERFECT!
+  URL: https://github.com/gauravkumar1994/pss-lead-crm
+  Abhi EMPTY hai — code push hone ke baad files dikhengi.
+
+================================================================================
+  STEP A — Git install (5 minute, ek baar)
+================================================================================
+
+1) Browser kholo: https://git-scm.com/download/win
+   (64-bit Git for Windows Setup download hoga)
+
+2) Installer chalao — sab jagah NEXT dabate jao (default OK)
+
+3) IMPORTANT screen par:
+   "Adjusting your PATH environment" →
+   SELECT: "Git from the command line and also from 3rd-party software"
+   (yehi default hota hai — isse CMD mein git kaam karega)
+
+4) Install complete → CMD band karke NAYA CMD kholo
+
+5) Test:
+   git --version
+   (version number aana chahiye, error nahi)
+
+
+================================================================================
+  STEP B — Code push (Git install ke baad)
+================================================================================
+
+1) Project folder kholo PowerShell / CMD:
+   cd C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm
+
+2) Ye commands EK EK karke chalao (GitHub wale page jaisa):
+
+   git init
+   git add .
+   git commit -m "PSS Lead CRM - first commit"
+   git branch -M main
+   git remote add origin https://github.com/gauravkumar1994/pss-lead-crm.git
+   git push -u origin main
+
+3) GitHub login popup aayega:
+   - Username: gauravkumar1994
+   - Password: GitHub TOKEN (password nahi!)
+   
+   Token banana:
+   GitHub → Settings → Developer settings → Personal access tokens
+   → Tokens (classic) → Generate new token
+   → Repo checkbox tick → Generate
+   → Token copy karke password ki jagah paste karo
+
+4) Push success → GitHub repo par saari files dikhengi
+
+
+================================================================================
+  STEP C — Phir live deploy (Render)
+================================================================================
+
+DEPLOY-ABHI-KARO.txt follow karo — Render Blueprint se live URL.
+
+
+ALTERNATIVE (bina CMD): GitHub Desktop
+  https://desktop.github.com
+  Install → Login → Add local folder → Publish to pss-lead-crm
+
+================================================================================

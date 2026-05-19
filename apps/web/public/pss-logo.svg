@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="PSS">
+  <defs>
+    <linearGradient id="g" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#AED581"/>
+      <stop offset="50%" stop-color="#66BB6A"/>
+      <stop offset="100%" stop-color="#2E7D32"/>
+    </linearGradient>
+  </defs>
+  <path
+    fill="url(#g)"
+    d="M100 18c-28 0-50 18-56 44-3 12-1 24 4 34-6 9-9 20-7 31 3 20 22 36 44 38 6 1 12 0 18-4 8 6 18 9 28 7 25-3 44-22 47-47 2-11-1-22-7-31 5-10 7-22 4-34C150 36 128 18 100 18zm-36 48c3-14 16-24 32-24s29 10 32 24c-8-3-17-4-26-4s-18 1-26 4zm52 78c-14 3-28-3-36-14 11 7 25 8 36 3 11 5 25 4 36-3-8 11-22 17-36 14z"
+  />
+  <g fill="none" stroke="#C5E1A5" stroke-width="2" stroke-linecap="round" opacity="0.85">
+    <path d="M62 72h16v10H62zm60 0h16v10h-16zM78 94h44M68 118h64M88 142h24"/>
+    <circle cx="70" cy="77" r="2.5" fill="#E8F5E9"/>
+    <circle cx="130" cy="77" r="2.5" fill="#E8F5E9"/>
+    <circle cx="100" cy="94" r="2.5" fill="#E8F5E9"/>
+  </g>
+  <text
+    x="100"
+    y="112"
+    text-anchor="middle"
+    font-family="Arial Black, Segoe UI, sans-serif"
+    font-size="42"
+    font-weight="900"
+    fill="#1B5E20"
+  >PSS</text>
+</svg>

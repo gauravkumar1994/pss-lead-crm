@@ -1,0 +1,37 @@
+PSS SOLUTION start log - 19-05-2026 11:32:10.33 
+
+up to date, audited 184 packages in 6s
+
+42 packages are looking for funding
+  run `npm fund` for details
+
+4 vulnerabilities (2 moderate, 2 critical)
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Error: 
+EPERM: operation not permitted, rename 'C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm\node_modules\.prisma\client\query_engine-windows.dll.node.tmp13056' -> 'C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm\node_modules\.prisma\client\query_engine-windows.dll.node'
+
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": SQLite database "dev.db" at "file:./prisma/dev.db"
+
+The database is already in sync with the Prisma schema.
+
+Running generate... (Use --skip-generate to skip the generators)
+[2K[1A[2K[GRunning generate... - Prisma Client
+[2K[1A[2K[GEPERM: operation not permitted, rename 
+'C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm\node_modules\.prisma\cli
+ent\query_engine-windows.dll.node.tmp3608' -> 'C:\Users\HP\.cursor\projects\empt
+y-window\pss-lead-crm\node_modules\.prisma\client\query_engine-windows.dll.node'
+
+
+> @pss/api@1.0.0 db:seed
+> tsx prisma/seed.ts
+
+Seed complete. Login: admin / admin123

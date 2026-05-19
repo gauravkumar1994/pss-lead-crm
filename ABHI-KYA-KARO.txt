@@ -1,0 +1,53 @@
+╔══════════════════════════════════════════════════════════════╗
+║  "Can't connect" / Server se connect nahi — FIX (5 steps)   ║
+╚══════════════════════════════════════════════════════════════╝
+
+YE ERROR ISLIYE AATA HAI:
+  Program (server) chal hi nahi raha.
+  Browser sirf dikhata hai — pehle server START karna zaroori hai.
+
+
+STEP 1 — Node.js (ek baar)
+  https://nodejs.org  →  LTS Download  →  Install  →  PC RESTART
+  CMD kholo, likho:  node -v
+  Version number aani chahiye (jaise v20.x)
+
+
+STEP 2 — Setup check
+  Folder: pss-lead-crm
+  Double-click:  CHECK-SETUP.bat
+  Agar [FAIL] node_modules → STEP 3 karo
+
+
+STEP 3 — App start (sabse important)
+  Double-click:  START-APP.bat
+  • 5-10 minute wait (pehli baar npm install)
+  • 2 windows khulengi: PSS-API  aur  PSS-WEB
+  • DONO windows BAND MAT KARO
+
+  Agar error aaye ek hi window mein dekhna ho:
+  Double-click:  START-ONE-WINDOW.bat
+  (us black window ko band mat karna)
+
+
+STEP 4 — Test browser mein
+  Pehle:  http://localhost:4000/health
+          → {"ok":true}  hona chahiye
+
+  Phir:   http://localhost:3000/login
+          → Login page
+
+  Login:  admin  /  admin123
+
+
+STEP 5 — Agar phir bhi fail
+  1) start-log.txt kholo (project folder mein) — error likha hoga
+  2) PSS-API window ka screenshot bhejo (poori red line)
+  3) FIX-DATABASE.bat chalao, phir dubara START-APP.bat
+
+
+GALTIYAN:
+  ✗ Sirf browser link khulna bina START-APP ke
+  ✗ START-APP ke turant baad window band karna
+  ✗ Node install ke bina try karna
+  ✗ Docker — is project ke liye ZAROORI NAHI (SQLite use hota hai)
