@@ -560,6 +560,21 @@ a:hover {
   color: var(--wa-muted);
 }
 
+.alert-info {
+  background: rgba(255, 193, 7, 0.12);
+  border: 1px solid rgba(255, 193, 7, 0.35);
+  color: #ffda79;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.login-warmup {
+  margin-top: 0.5rem;
+}
+
 .alert-success {
   background: rgba(76, 175, 80, 0.12);
   border: 1px solid rgba(76, 175, 80, 0.35);

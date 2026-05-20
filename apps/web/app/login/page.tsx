@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { api, setToken } from "@/lib/api";
+import { api, getApiBaseUrl, setToken } from "@/lib/api";
 import { setStoredUser } from "@/lib/auth-store";
 
 export default function LoginPage() {
@@ -14,11 +14,33 @@ export default function LoginPage() {
   const [serverOk, setServerOk] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const base = process.env.NEXT_PUBLIC_API_URL ?? "https://pss-crm-api.onrender.com";
-    fetch(`${base}/health`)
-      .then((r) => r.ok)
-      .then(setServerOk)
-      .catch(() => setServerOk(false));
+    const base = getApiBaseUrl();
+    let cancelled = false;
+
+    async function pollHealth() {
+      // Cold start: poll ~2 min before showing red error (free Render)
+      const maxTries = 40;
+      const delayMs = 3000;
+      for (let i = 0; i < maxTries; i++) {
+        if (cancelled) return;
+        try {
+          const r = await fetch(`${base}/health`, { cache: "no-store" });
+          if (r.ok) {
+            if (!cancelled) setServerOk(true);
+            return;
+          }
+        } catch {
+          /* still waking up */
+        }
+        await new Promise((r) => setTimeout(r, delayMs));
+      }
+      if (!cancelled) setServerOk(false);
+    }
+
+    void pollHealth();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function onSubmit(e: React.FormEvent) {
@@ -59,15 +81,22 @@ export default function LoginPage() {
           <p className="login-tagline">Lead CRM · WhatsApp · Follow-ups</p>
         </header>
 
+        {serverOk === null && (
+          <p className="alert-info login-warmup">
+            Server start ho rahi hai… thoda wait karo (free plan par 30 sec–2 min lag sakta hai).
+            Phir login ho jayega.
+          </p>
+        )}
         {serverOk === false && (
           <div className="alert-error">
-            API server se connect nahi ho pa raha. 30-60 sec baad retry karo, phir{" "}
-            <a href={`${process.env.NEXT_PUBLIC_API_URL ?? "https://pss-crm-api.onrender.com"}/health`} target="_blank" rel="noreferrer">
-              health check
+            Abhi bhi API respond nahi kar rahi. Page refresh karo ya 1–2 minute baad dubara
+            try karo.{" "}
+            <a href={`${getApiBaseUrl()}/health`} target="_blank" rel="noreferrer">
+              Health check
             </a>
           </div>
         )}
-        {serverOk === true && <p className="alert-success">Server connected</p>}
+        {serverOk === true && <p className="alert-success">Server connected — aap login kar sakte ho</p>}
 
         <form onSubmit={onSubmit} className="login-form">
           <div className="form-group">
