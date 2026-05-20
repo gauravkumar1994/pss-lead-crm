@@ -1,5 +1,5 @@
 import { Queue, Worker } from "bullmq";
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 import { runCampaignBulk } from "./campaign-runner.js";
 
 const redisUrl = process.env.REDIS_URL ?? "redis://localhost:6379";
