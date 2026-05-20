@@ -2,18 +2,17 @@
 # Dashboard → New + → Blueprint → Connect GitHub repo → Apply
 
 databases:
-  - name: pss-crm-db-sg
+  - name: pss-crm-db
     databaseName: pss_crm
     user: crm
     plan: free
-    region: singapore
 
 services:
   - type: web
     name: pss-crm-api
     runtime: node
     plan: free
-    region: singapore
+    region: oregon
     rootDir: .
     buildCommand: npm install && npm run build -w apps/api
     startCommand: cd apps/api && npm run render:setup && npm run start:prod
@@ -23,7 +22,7 @@ services:
         value: 20.18.0
       - key: DATABASE_URL
         fromDatabase:
-          name: pss-crm-db-sg
+          name: pss-crm-db
           property: connectionString
       - key: JWT_SECRET
         generateValue: true

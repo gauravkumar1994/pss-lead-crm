@@ -1,6 +1,6 @@
-PSS SOLUTION start log - 19-05-2026 11:32:10.33 
+PSS SOLUTION start log - 20-05-2026 14:46:48.98 
 
-up to date, audited 184 packages in 6s
+up to date, audited 184 packages in 8s
 
 42 packages are looking for funding
   run `npm fund` for details
@@ -11,27 +11,63 @@ To address all issues (including breaking changes), run:
   npm audit fix --force
 
 Run `npm audit` for details.
-Environment variables loaded from .env
-Prisma schema loaded from prisma\schema.prisma
-Error: 
-EPERM: operation not permitted, rename 'C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm\node_modules\.prisma\client\query_engine-windows.dll.node.tmp13056' -> 'C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm\node_modules\.prisma\client\query_engine-windows.dll.node'
-
+unable to get image 'redis:7-alpine': failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
+For more information, see: https://pris.ly/prisma-config
 
 Environment variables loaded from .env
 Prisma schema loaded from prisma\schema.prisma
-Datasource "db": SQLite database "dev.db" at "file:./prisma/dev.db"
 
-The database is already in sync with the Prisma schema.
+✔ Generated Prisma Client (v6.19.3) to .\..\..\node_modules\@prisma\client in 679ms
 
-Running generate... (Use --skip-generate to skip the generators)
-[2K[1A[2K[GRunning generate... - Prisma Client
-[2K[1A[2K[GEPERM: operation not permitted, rename 
-'C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm\node_modules\.prisma\cli
-ent\query_engine-windows.dll.node.tmp3608' -> 'C:\Users\HP\.cursor\projects\empt
-y-window\pss-lead-crm\node_modules\.prisma\client\query_engine-windows.dll.node'
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
 
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
+warn The configuration property `package.json#prisma` is deprecated and will be removed in Prisma 7. Please migrate to a Prisma config file (e.g., `prisma.config.ts`).
+For more information, see: https://pris.ly/prisma-config
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Error: Prisma schema validation - (get-config wasm)
+Error code: P1012
+error: Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`.
+  -->  prisma\schema.prisma:8
+   | 
+ 7 |   provider = "postgresql"
+ 8 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+[Context: getConfig]
+
+Prisma CLI Version : 6.19.3
 
 > @pss/api@1.0.0 db:seed
 > tsx prisma/seed.ts
 
-Seed complete. Login: admin / admin123
+PrismaClientInitializationError: 
+Invalid `prisma.user.upsert()` invocation in
+C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm\apps\api\prisma\seed.ts:8:35
+
+  5 
+  6 async function main() {
+  7   const hash = await bcrypt.hash("admin123", 10);
+→ 8   const admin = await prisma.user.upsert(
+error: Error validating datasource `db`: the URL must start with the protocol `postgresql://` or `postgres://`.
+  -->  schema.prisma:8
+   | 
+ 7 |   provider = "postgresql"
+ 8 |   url      = env("DATABASE_URL")
+   | 
+
+Validation Error Count: 1
+    at ei.handleRequestError (C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm\node_modules\@prisma\client\src\runtime\RequestHandler.ts:242:13)
+    at ei.handleAndLogRequestError (C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm\node_modules\@prisma\client\src\runtime\RequestHandler.ts:174:12)
+    at ei.request (C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm\node_modules\@prisma\client\src\runtime\RequestHandler.ts:143:12)
+    at async a (C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:833:24)
+    at async main (C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm\apps\api\prisma\seed.ts:8:17) {
+  clientVersion: '6.19.3',
+  errorCode: undefined,
+  retryable: undefined
+}

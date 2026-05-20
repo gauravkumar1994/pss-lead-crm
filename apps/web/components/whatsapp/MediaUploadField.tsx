@@ -28,7 +28,7 @@ export function MediaUploadField({ value, onChange, label }: Props) {
       .catch(() =>
         setConfig({
           enabled: true,
-          publicBase: "http://localhost:4000",
+          publicBase: process.env.NEXT_PUBLIC_API_URL ?? "https://pss-crm-api.onrender.com",
           whatsappPhotoNote: "",
         })
       );

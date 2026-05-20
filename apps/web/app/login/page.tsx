@@ -14,7 +14,7 @@ export default function LoginPage() {
   const [serverOk, setServerOk] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+    const base = process.env.NEXT_PUBLIC_API_URL ?? "https://pss-crm-api.onrender.com";
     fetch(`${base}/health`)
       .then((r) => r.ok)
       .then(setServerOk)
@@ -61,8 +61,8 @@ export default function LoginPage() {
 
         {serverOk === false && (
           <div className="alert-error">
-            API server band hai. <strong>START-APP.bat</strong> chalao, phir{" "}
-            <a href="http://localhost:4000/health" target="_blank" rel="noreferrer">
+            API server se connect nahi ho pa raha. 30-60 sec baad retry karo, phir{" "}
+            <a href={`${process.env.NEXT_PUBLIC_API_URL ?? "https://pss-crm-api.onrender.com"}/health`} target="_blank" rel="noreferrer">
               health check
             </a>
           </div>
