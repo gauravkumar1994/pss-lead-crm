@@ -1,0 +1,73 @@
+================================================================================
+  RENDER: pss-crm-api (deploy failed) — KYA HUA?
+================================================================================
+
+Screenshot mein:
+  ✅ Database (pss-crm-db) — OK
+  ❌ API (pss-crm-api) — deploy failed
+  ✅ Web (pss-crm-web) — OK
+
+Matlab: Website shell ban gaya, lekin BACKEND (API) start nahi hua.
+Bina API ke login / leads kaam nahi karenge.
+
+Common reasons (humne code fix kiya):
+  1) Prisma Linux engine missing on Render
+  2) Build / start mein db push + seed slow → health check fail
+  3) TypeScript build issue
+
+================================================================================
+  STEP 1 — Exact error dekho (Render par)
+================================================================================
+
+1) Render → left side → click "pss-crm-api"
+2) Tab "Logs" ya failed deploy par click
+3) Neeche scroll — LAST red lines copy karo
+
+Typical errors:
+  - "Query engine library ... could not be found" → Prisma fix (done in code)
+  - "error TS6059" / rootDir → build fix (done)
+  - "Can't reach database" → DATABASE_URL / DB wait
+  - "Exited with status 1" → seed or prisma fail
+
+================================================================================
+  STEP 2 — Fixed code GitHub par bhejo
+================================================================================
+
+Project folder mein double-click: GITHUB-PUSH-ABHI.bat
+
+Ya CMD (har line alag Enter):
+
+  cd C:\Users\HP\.cursor\projects\empty-window\pss-lead-crm
+  git add .
+  git commit -m "Fix Render API deploy"
+  git push
+
+================================================================================
+  STEP 3 — Render par dubara deploy
+================================================================================
+
+Option A — Blueprint sync:
+  PSS SOLUTION → Syncs → Manual sync
+
+Option B — Sirf API service:
+  pss-crm-api → Manual Deploy → Deploy latest commit
+
+Wait 10–15 min. API par green "Live" hona chahiye.
+
+================================================================================
+  STEP 4 — Env variables (deploy ke baad)
+================================================================================
+
+pss-crm-api → Environment:
+  CORS_ORIGIN = https://pss-crm-web.onrender.com
+  PUBLIC_API_URL = https://pss-crm-api.onrender.com
+
+pss-crm-web → Environment:
+  NEXT_PUBLIC_API_URL = https://pss-crm-api.onrender.com
+
+Dono → Manual Deploy once more.
+
+Test: https://pss-crm-web.onrender.com/login
+  admin / admin123
+
+================================================================================
