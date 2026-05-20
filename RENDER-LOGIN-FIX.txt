@@ -1,0 +1,40 @@
+================================================================================
+  KYUN "WEB LIVE" HAI PAR LOGIN FAIL?
+================================================================================
+
+2 alag services hain:
+  pss-crm-web  = website (login page)  --> "Your service is live"
+  pss-crm-api  = backend (data/login)   --> alag URL, so sakti hai
+
+Website live hone ka matlab API bhi connected hai — NAHI.
+
+Asli problem thi: browser API ko direct call karta tha, CORS block.
+
+Fix: website ab /api se same-origin proxy use karti hai.
+
+================================================================================
+  RENDER DASHBOARD - YE ENV ZAROOR SET KARO
+================================================================================
+
+pss-crm-api -> Environment:
+  CORS_ORIGIN = https://pss-crm-web.onrender.com
+  PUBLIC_API_URL = https://pss-crm-api.onrender.com
+  DATABASE_URL = (external URL + ?sslmode=require)
+
+pss-crm-web -> Environment:
+  NEXT_PUBLIC_API_URL = /api
+  API_PROXY_TARGET = https://pss-crm-api.onrender.com
+
+Phir DONO par Manual Deploy -> latest commit.
+
+================================================================================
+  CLIENT DEMO TRICK (free tier)
+================================================================================
+
+Demo se 5 min pehle kholo:
+  https://pss-crm-api.onrender.com/health
+Wait until {"ok":true}
+Phir:
+  https://pss-crm-web.onrender.com/login
+
+================================================================================

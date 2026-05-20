@@ -83,17 +83,20 @@ export default function LoginPage() {
 
         {serverOk === null && (
           <p className="alert-info login-warmup">
-            Server start ho rahi hai… thoda wait karo (free plan par 30 sec–2 min lag sakta hai).
-            Phir login ho jayega.
+            CRM server start ho rahi hai… 30–90 sec wait karo, phir Sign in dabao.
           </p>
         )}
         {serverOk === false && (
           <div className="alert-error">
-            Abhi bhi API respond nahi kar rahi. Page refresh karo ya 1–2 minute baad dubara
-            try karo.{" "}
-            <a href={`${getApiBaseUrl()}/health`} target="_blank" rel="noreferrer">
-              Health check
+            API abhi ready nahi. Pehle nayi tab mein API wake karo:{" "}
+            <a
+              href="https://pss-crm-api.onrender.com/health"
+              target="_blank"
+              rel="noreferrer"
+            >
+              API health
             </a>
+            {" "}(ok:true dikhe), phir is page par refresh + login.
           </div>
         )}
         {serverOk === true && <p className="alert-success">Server connected — aap login kar sakte ho</p>}

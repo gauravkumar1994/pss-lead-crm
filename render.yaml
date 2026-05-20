@@ -29,15 +29,15 @@ services:
       - key: USE_REDIS
         value: false
       - key: CORS_ORIGIN
-        sync: false
+        value: https://pss-crm-web.onrender.com,http://localhost:3000
       - key: PUBLIC_API_URL
-        sync: false
+        value: https://pss-crm-api.onrender.com
 
   - type: web
     name: pss-crm-web
     runtime: node
     plan: free
-    region: singapore
+    region: oregon
     rootDir: .
     buildCommand: npm install && npm run build -w apps/web
     startCommand: npm run start -w apps/web
@@ -45,4 +45,6 @@ services:
       - key: NODE_VERSION
         value: 20.18.0
       - key: NEXT_PUBLIC_API_URL
-        sync: false
+        value: /api
+      - key: API_PROXY_TARGET
+        value: https://pss-crm-api.onrender.com

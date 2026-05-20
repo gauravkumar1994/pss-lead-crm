@@ -17,8 +17,10 @@ import { startCampaignWorker } from "./worker/queue.js";
 export async function buildApp() {
   const app = Fastify({ logger: true });
 
+  const corsRaw = process.env.CORS_ORIGIN ?? "http://localhost:3000,https://pss-crm-web.onrender.com";
+  const corsOrigins = corsRaw.split(",").map((s) => s.trim()).filter(Boolean);
   await app.register(cors, {
-    origin: process.env.CORS_ORIGIN ?? "http://localhost:3000",
+    origin: corsOrigins.length === 1 ? corsOrigins[0] : corsOrigins,
     credentials: true,
   });
 
