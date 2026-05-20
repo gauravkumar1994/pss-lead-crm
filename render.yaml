@@ -14,8 +14,8 @@ services:
     plan: free
     region: singapore
     rootDir: .
-    buildCommand: npm install && npm run build -w apps/api && cd apps/api && npx prisma generate && npx prisma db push --accept-data-loss && npx tsx prisma/seed.ts
-    startCommand: cd apps/api && npm run start:prod
+    buildCommand: npm install && npm run build -w apps/api
+    startCommand: cd apps/api && npm run render:setup && npm run start:prod
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
