@@ -40,9 +40,11 @@ export async function buildApp() {
   });
 
   app.setErrorHandler((err, _req, reply) => {
-    const status = (err as { statusCode?: number }).statusCode ?? 500;
+    const e = err as { statusCode?: number; message?: string };
+    const status = e.statusCode ?? 500;
+    const message = err instanceof Error ? err.message : e.message;
     reply.status(status).send({
-      error: err.message ?? "Internal error",
+      error: message ?? "Internal error",
     });
   });
 
