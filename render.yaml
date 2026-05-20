@@ -2,10 +2,11 @@
 # Dashboard → New + → Blueprint → Connect GitHub repo → Apply
 
 databases:
-  - name: pss-crm-db
+  - name: pss-crm-db-sg
     databaseName: pss_crm
     user: crm
     plan: free
+    region: singapore
 
 services:
   - type: web
@@ -22,7 +23,7 @@ services:
         value: 20.18.0
       - key: DATABASE_URL
         fromDatabase:
-          name: pss-crm-db
+          name: pss-crm-db-sg
           property: connectionString
       - key: JWT_SECRET
         generateValue: true
