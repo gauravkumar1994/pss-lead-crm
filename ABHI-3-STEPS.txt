@@ -1,0 +1,66 @@
+================================================================================
+  BEGINNER - API ERROR FIX (sirf 3 steps)
+================================================================================
+
+Tumne GITHUB-PUSH-ABHI.bat chalaya - ye dikha:
+  "nothing to commit" + "Everything up-to-date"
+
+MATLAB:
+  Code GitHub par PEHLE SE hai. Push dubara ki zaroorat nahi.
+  Problem ab RENDER par hai - API dubara BUILD karni hai.
+
+================================================================================
+  STEP 1 — Naya commit (optional, safe)
+================================================================================
+
+Double-click:  FIX-PUSH-RENDER.bat
+
+Agar "PUSH OK" aaye = GitHub par naya commit gaya.
+Agar "pehle se push" = skip, seedha Step 2.
+
+================================================================================
+  STEP 2 — RENDER par API deploy (ZAROORI)
+================================================================================
+
+Browser kholo → https://dashboard.render.com
+
+1) Left: PSS SOLUTION
+2) Tab: Resources
+3) Line: pss-crm-api  (Failed deploy) → CLICK
+4) Top right button: Manual Deploy
+5) Choose: Deploy latest commit
+6) Wait 10-15 min
+
+SUCCESS = status "Live" green (Failed nahi)
+
+GALTI MAT KARNA:
+  - "Manual sync" Blueprint par — ye API fix NAHI karta
+  - Sirf "Manual Deploy" on pss-crm-api service
+
+================================================================================
+  STEP 3 — Environment (API Live ke baad)
+================================================================================
+
+pss-crm-api → Environment → Add:
+
+  CORS_ORIGIN     = https://pss-crm-web.onrender.com
+  PUBLIC_API_URL  = https://pss-crm-api.onrender.com
+
+pss-crm-web → Environment → Add:
+
+  NEXT_PUBLIC_API_URL = https://pss-crm-api.onrender.com
+
+Save → har service par Manual Deploy once.
+
+================================================================================
+  TEST
+================================================================================
+
+Browser:
+  https://pss-crm-api.onrender.com/health   → {"ok":true}
+  https://pss-crm-web.onrender.com/login    → admin / admin123
+
+Agar Step 2 ke baad phir Failed:
+  pss-crm-api → Logs → last 20 lines screenshot bhejo
+
+================================================================================
