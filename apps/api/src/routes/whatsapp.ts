@@ -96,7 +96,7 @@ export async function whatsappRoutes(app: FastifyInstance) {
 
   app.addHook("onRequest", app.authenticate);
 
-  /** Read-only: assigned API (SalesNayak style — user cannot change) */
+  /** Read-only: assigned API (user cannot change — admin controls everything) */
   app.get("/my-assignment", async (req) => {
     const user = getUser(req);
     const row = await prisma.userWhatsAppIntegration.findUnique({

@@ -58,7 +58,7 @@ export default function QuickSendPage() {
     <>
       <div className="quick-send-layout">
         <div className="quick-send-sidebar card">
-          <h3>WA CRM — Quick send</h3>
+          <h3>Quick WhatsApp Send</h3>
           <div className="form-group">
             <label>Search lead</label>
             <input

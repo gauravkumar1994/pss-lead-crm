@@ -227,7 +227,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
       scopeLabel:
         user.role === Role.USER
           ? "Your assigned leads only"
-          : "All users — team overview (SalesNayak style)",
+          : "All users — team overview",
     };
   });
 }

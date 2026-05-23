@@ -114,7 +114,7 @@ export default function DashboardPage() {
         <div className="card animate-fade-in" style={{ marginBottom: "1.25rem" }}>
           <h3 style={{ marginTop: 0 }}>👥 Team activity report (all users)</h3>
           <p className="wa-hint" style={{ marginTop: 0 }}>
-            SalesNayak style — har user ke leads, calls aur WhatsApp aaj.
+            Har user ke active leads, aaj ke calls aur WhatsApp activity ki ek nazar.
           </p>
           <div className="table-wrap">
             <table className="table">
@@ -155,7 +155,7 @@ export default function DashboardPage() {
           <ul className="timeline">
             {stats.recentActivities.map((a) => (
               <li key={a.id}>
-                <strong>{a.userName}</strong> · {a.leadCode} {a.leadName}
+                <strong>{a.userName}</strong> · {a.leadName}
                 <br />
                 <span className="badge badge-stage">{a.type}</span>
                 {a.remarkType ? ` · ${a.remarkType}` : ""} — {a.content}

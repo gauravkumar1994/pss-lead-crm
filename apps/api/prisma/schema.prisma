@@ -223,10 +223,18 @@ model Lead {
   calls        CallLog[]
   campaignRecipients CampaignRecipient[]
 
+  // Hot lookup indexes (single-column)
   @@index([mobile])
   @@index([assignedUserId])
   @@index([stage])
   @@index([status])
+  // Newest-first ORDER BY on every leads list page (route uses updatedAt)
+  @@index([updatedAt])
+  @@index([createdAt])
+  // Follow-ups page filter on nextFollowup
+  @@index([nextFollowup])
+  // Most common compound filter: "show me my open leads by stage"
+  @@index([assignedUserId, stage, status])
   @@map("leads")
 }
 
@@ -245,6 +253,10 @@ model Activity {
   user User @relation(fields: [userId], references: [id])
 
   @@index([leadId])
+  // Per-user activity feed sorted by date (dashboard, user reports)
+  @@index([userId, createdAt])
+  // Global team activity feed sorted by date (admin dashboard)
+  @@index([createdAt])
   @@map("activities")
 }
 

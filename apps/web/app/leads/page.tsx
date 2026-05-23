@@ -324,7 +324,6 @@ export default function LeadsPage() {
         <table className="table">
           <thead>
             <tr>
-              <th>Code</th>
               <th>Name</th>
               <th>Mobile</th>
               <th>Stage</th>
@@ -338,14 +337,14 @@ export default function LeadsPage() {
           <tbody>
             {loading && items.length === 0 && (
               <tr>
-                <td colSpan={9}>
+                <td colSpan={8}>
                   <PageSpinner label="Loading leads…" />
                 </td>
               </tr>
             )}
             {!loading && items.length === 0 && (
               <tr>
-                <td colSpan={9} className="empty-hint">
+                <td colSpan={8} className="empty-hint">
                   No leads found. Change filters or add a lead.
                 </td>
               </tr>
@@ -353,9 +352,10 @@ export default function LeadsPage() {
             {items.map((l) => (
               <tr key={l.id}>
                 <td>
-                  <Link href={`/leads/${l.id}`}>{l.leadCode}</Link>
+                  <Link href={`/leads/${l.id}`}>
+                    <strong>{l.name}</strong>
+                  </Link>
                 </td>
-                <td>{l.name}</td>
                 <td>{l.mobile}</td>
                 <td>
                   <span className="badge badge-stage">{l.stage}</span>

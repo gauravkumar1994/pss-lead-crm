@@ -170,8 +170,9 @@ export default function TeamWhatsAppPage() {
       )}
 
       <p className="wa-hint" style={{ marginBottom: "1rem" }}>
-        <strong>SalesNayak style:</strong> Admin har user (including yourself) ke liye API choose karta hai —
-        UltraMsg, AtozSender, ya Evolution. User sirf apna assigned API dekhta hai, edit nahi kar sakta.
+        <strong>Admin-controlled WhatsApp APIs:</strong> Tum har user (apne sahit) ke liye API
+        choose karte ho — UltraMsg, AtozSender, ya Evolution. User sirf apna assigned API dekhta
+        hai, edit nahi kar sakta.
       </p>
 
       <div className="card table-wrap">

@@ -284,7 +284,7 @@ export default function BulkProfilesPage() {
                   value={draft.gapMinutes}
                   onChange={(e) => setDraft((d) => ({ ...d, gapMinutes: Number(e.target.value) }))}
                 />
-                <small className="wa-hint">BEAST default: 18 minutes</small>
+                <small className="wa-hint">Industry-safe default: 18 minutes</small>
               </div>
               <div className="form-group">
                 <label>Start Hour (0–23)</label>

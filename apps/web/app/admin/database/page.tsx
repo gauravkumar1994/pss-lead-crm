@@ -4,22 +4,27 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { useClientAuth, canManageWhatsAppApi } from "@/lib/auth-store";
 
+type DisplayColumn = { key: string; label: string };
+
 type TableInfo = {
   key: string;
   label: string;
   description: string;
   count: number;
   searchFields: string[];
+  displayColumns: DisplayColumn[];
 };
 
 type TableData = {
   key: string;
   label: string;
   columns: string[];
+  displayColumns: DisplayColumn[];
   items: Record<string, unknown>[];
   total: number;
   page: number;
   limit: number;
+  showAll: boolean;
 };
 
 function formatCell(value: unknown): string {
@@ -38,6 +43,33 @@ function formatCell(value: unknown): string {
   return s;
 }
 
+function getApiBase(): string {
+  return process.env.NEXT_PUBLIC_API_URL ?? "/api";
+}
+
+function getToken(): string {
+  if (typeof window === "undefined") return "";
+  return localStorage.getItem("auth-token") ?? "";
+}
+
+async function downloadCsv(key: string, label: string, search: string, showAll: boolean) {
+  const qs = new URLSearchParams();
+  if (search) qs.set("search", search);
+  if (showAll) qs.set("showAllColumns", "true");
+  const url = `${getApiBase()}/admin-db/tables/${key}/export${qs.toString() ? `?${qs.toString()}` : ""}`;
+  const token = getToken();
+  const res = await fetch(url, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+  if (!res.ok) throw new Error(`Export failed (${res.status})`);
+  const blob = await res.blob();
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `${key}-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  void label;
+}
+
 export default function AdminDatabasePage() {
   const { user, ready } = useClientAuth();
   const isAdmin = ready && canManageWhatsAppApi(user?.role ?? "USER");
@@ -47,7 +79,10 @@ export default function AdminDatabasePage() {
   const [data, setData] = useState<TableData | null>(null);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [showAll, setShowAll] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
 
   useEffect(() => {
     if (!ready || !isAdmin) return;
@@ -62,26 +97,54 @@ export default function AdminDatabasePage() {
       page: String(page),
       limit: "50",
       ...(search ? { search } : {}),
+      ...(showAll ? { showAllColumns: "true" } : {}),
     });
     api<TableData>(`/admin-db/tables/${activeKey}?${qs.toString()}`)
       .then(setData)
       .catch((e) => setError(e instanceof Error ? e.message : "Load failed"));
-  }, [activeKey, page, search]);
+  }, [activeKey, page, search, showAll]);
+
+  async function onExport() {
+    if (!activeKey || !data) return;
+    setBusy(true);
+    setError("");
+    setInfo("");
+    try {
+      await downloadCsv(activeKey, data.label, search, showAll);
+      setInfo(`${data.label} CSV download ho gaya (max 50,000 rows). Bade dataset ke liye search filter use karke chhote chunks export karo.`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Export failed");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   if (!ready) return <p>Loading…</p>;
   if (!isAdmin) {
     return <div className="alert-error">Sirf Admin database access kar sakta hai.</div>;
   }
 
+  const headerLabel = (col: string): string => {
+    if (!data) return col;
+    return data.displayColumns.find((d) => d.key === col)?.label ?? col;
+  };
+
   return (
     <>
       {error && <div className="alert-error" style={{ marginBottom: "1rem" }}>{error}</div>}
+      {info && (
+        <div className="card" style={{ borderLeft: "4px solid var(--wa-green)", marginBottom: "1rem" }}>
+          {info}
+        </div>
+      )}
 
       <div className="card" style={{ marginBottom: "1rem" }}>
         <h2 style={{ marginTop: 0 }}>Database Panel (read-only)</h2>
         <p className="page-intro">
-          Yahan tum saari PostgreSQL tables browse kar sakte ho — Adminer/phpMyAdmin jaisa.
-          Passwords aur access tokens auto-mask hote hain. Yahan se kuch edit nahi hota; sirf data verify karna.
+          Yahan tum saari PostgreSQL tables browse kar sakte ho — Adminer jaisa, lekin sirf data
+          verify karne ke liye (edit yahaan se nahi hota). Passwords aur access tokens auto-mask
+          hote hain. Activity log mein user ka <strong>naam</strong> aur lead ka <strong>naam + mobile</strong> directly
+          dikhta hai — IDs hide hain. CSV export se bulk data download kar sakte ho.
         </p>
       </div>
 
@@ -102,6 +165,8 @@ export default function AdminDatabasePage() {
                       setActiveKey(t.key);
                       setPage(1);
                       setSearch("");
+                      setShowAll(false);
+                      setInfo("");
                     }}
                   >
                     <strong>{t.label}</strong>
@@ -122,21 +187,58 @@ export default function AdminDatabasePage() {
             <p>Loading data…</p>
           ) : (
             <>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: "0.5rem",
+                }}
+              >
                 <h3 style={{ margin: 0 }}>
                   {data.label} <small>({data.total})</small>
                 </h3>
-                <input
-                  type="search"
-                  className="form-control"
-                  placeholder="Search…"
-                  style={{ maxWidth: 280 }}
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                    setPage(1);
-                  }}
-                />
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+                  <input
+                    type="search"
+                    className="form-control"
+                    placeholder="Search…"
+                    style={{ maxWidth: 240 }}
+                    value={search}
+                    onChange={(e) => {
+                      setSearch(e.target.value);
+                      setPage(1);
+                    }}
+                  />
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.4rem",
+                      fontSize: "0.85rem",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={showAll}
+                      onChange={(e) => {
+                        setShowAll(e.target.checked);
+                        setPage(1);
+                      }}
+                    />
+                    Show all columns (incl. IDs)
+                  </label>
+                  <button
+                    type="button"
+                    className="btn btn-wa btn-sm"
+                    onClick={onExport}
+                    disabled={busy || data.items.length === 0}
+                  >
+                    {busy ? "Exporting…" : "Export CSV"}
+                  </button>
+                </div>
               </div>
 
               {data.items.length === 0 ? (
@@ -147,7 +249,7 @@ export default function AdminDatabasePage() {
                     <thead>
                       <tr>
                         {data.columns.map((c) => (
-                          <th key={c}>{c}</th>
+                          <th key={c}>{headerLabel(c)}</th>
                         ))}
                       </tr>
                     </thead>
