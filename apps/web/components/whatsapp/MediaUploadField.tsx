@@ -59,7 +59,7 @@ export function MediaUploadField({ value, onChange, label }: Props) {
         <input
           ref={inputRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif"
+          accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/3gpp,video/x-msvideo,video/mpeg"
           className="media-upload-input-hidden"
           onChange={(e) => {
             const f = e.target.files?.[0];
@@ -73,7 +73,7 @@ export function MediaUploadField({ value, onChange, label }: Props) {
           disabled={busy}
           onClick={() => inputRef.current?.click()}
         >
-          {busy ? "Uploading…" : "Browse photo"}
+          {busy ? "Uploading…" : "Browse photo / video"}
         </button>
         {value && (
           <button type="button" className="btn btn-ghost btn-sm" onClick={() => { onChange(""); setFileName(""); }}>
@@ -90,8 +90,12 @@ export function MediaUploadField({ value, onChange, label }: Props) {
 
       {value && (
         <div className="media-preview">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={value} alt="Attachment" />
+          {/\.(mp4|mov|avi|3gp|mpeg|m4v)(\?|$)/i.test(value) ? (
+            <video src={value} controls style={{ width: "100%", display: "block" }} />
+          ) : (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src={value} alt="Attachment" />
+          )}
         </div>
       )}
 

@@ -5,14 +5,34 @@ import { Role } from "@prisma/client";
 import { prisma } from "../lib/prisma.js";
 import { getUser, requireRoles } from "../lib/auth.js";
 
+const optStr = z.preprocess(
+  (v) => (v === "" || v === null || v === undefined ? undefined : v),
+  z.string().optional()
+);
+
+const optEmail = z.preprocess(
+  (v) => (v === "" || v === null || v === undefined ? undefined : v),
+  z.string().email().optional()
+);
+
 const createUserSchema = z.object({
   username: z.string().min(3),
   password: z.string().min(6),
   fullName: z.string().min(1),
-  email: z.string().email().optional(),
-  mobile: z.string().optional(),
+  email: optEmail,
+  mobile: optStr,
   role: z.nativeEnum(Role).default(Role.USER),
   department: z.string().optional(),
+});
+
+const updateUserSchema = z.object({
+  fullName: z.string().min(1).optional(),
+  email: optEmail,
+  mobile: optStr,
+  role: z.nativeEnum(Role).optional(),
+  department: z.string().optional(),
+  password: z.string().min(6).optional(),
+  status: z.enum(["active", "inactive"]).optional(),
 });
 
 export async function userRoutes(app: FastifyInstance) {
@@ -22,7 +42,7 @@ export async function userRoutes(app: FastifyInstance) {
     const user = getUser(req);
     requireRoles(user, [Role.ADMIN, Role.MANAGER]);
     const items = await prisma.user.findMany({
-      where: { status: "active" },
+      orderBy: [{ status: "asc" }, { fullName: "asc" }],
       select: {
         id: true,
         userCode: true,
@@ -32,9 +52,9 @@ export async function userRoutes(app: FastifyInstance) {
         department: true,
         email: true,
         mobile: true,
+        status: true,
         lastLoginAt: true,
       },
-      orderBy: { fullName: "asc" },
     });
     return { items };
   });
@@ -44,7 +64,7 @@ export async function userRoutes(app: FastifyInstance) {
     requireRoles(user, [Role.ADMIN]);
     const body = createUserSchema.parse(req.body);
     const exists = await prisma.user.findUnique({ where: { username: body.username } });
-    if (exists) return reply.status(409).send({ error: "Username taken" });
+    if (exists) return reply.status(409).send({ error: "Username already taken" });
 
     const hash = await bcrypt.hash(body.password, 10);
     const created = await prisma.user.create({
@@ -57,6 +77,7 @@ export async function userRoutes(app: FastifyInstance) {
         mobile: body.mobile,
         role: body.role,
         department: body.department ?? "Sales",
+        status: "active",
       },
       select: {
         id: true,
@@ -64,6 +85,7 @@ export async function userRoutes(app: FastifyInstance) {
         username: true,
         fullName: true,
         role: true,
+        status: true,
       },
     });
     return created;
@@ -78,11 +100,34 @@ export async function userRoutes(app: FastifyInstance) {
     return { items };
   });
 
+  app.post("/:id/activate", async (req) => {
+    const user = getUser(req);
+    requireRoles(user, [Role.ADMIN]);
+    const { id } = req.params as { id: string };
+    const updated = await prisma.user.update({
+      where: { id },
+      data: { status: "active" },
+      select: { id: true, status: true },
+    });
+    return updated;
+  });
+
   app.patch("/:id", async (req, reply) => {
     const user = getUser(req);
     requireRoles(user, [Role.ADMIN]);
     const { id } = req.params as { id: string };
-    const body = createUserSchema.partial().parse(req.body);
+    const body = updateUserSchema.parse(req.body);
+
+    // Self-protection: admin cannot demote/deactivate himself (avoid lockout)
+    if (id === user.id) {
+      if (body.role && body.role !== Role.ADMIN) {
+        return reply.status(400).send({ error: "You cannot change your own admin role" });
+      }
+      if (body.status && body.status !== "active") {
+        return reply.status(400).send({ error: "You cannot deactivate yourself" });
+      }
+    }
+
     const { password, ...rest } = body;
     const data: Record<string, unknown> = { ...rest };
     if (password) data.passwordHash = await bcrypt.hash(password, 10);
@@ -93,6 +138,7 @@ export async function userRoutes(app: FastifyInstance) {
       username: updated.username,
       fullName: updated.fullName,
       role: updated.role,
+      status: updated.status,
     };
   });
 
@@ -100,8 +146,9 @@ export async function userRoutes(app: FastifyInstance) {
     const user = getUser(req);
     requireRoles(user, [Role.ADMIN]);
     const { id } = req.params as { id: string };
-    if (id === user.id) return reply.status(400).send({ error: "Cannot delete yourself" });
+    if (id === user.id) return reply.status(400).send({ error: "Cannot deactivate yourself" });
     await prisma.user.update({ where: { id }, data: { status: "inactive" } });
-    return { ok: true };
+    return { ok: true, status: "inactive" };
   });
+
 }

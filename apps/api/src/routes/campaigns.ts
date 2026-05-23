@@ -1,9 +1,8 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { CampaignStatus, LeadStage, LeadType } from "@prisma/client";
+import { CampaignStatus, LeadStage, LeadType, Role } from "@prisma/client";
 import { prisma } from "../lib/prisma.js";
-import { getUser } from "../lib/auth.js";
-import { runCampaignBulk } from "../worker/campaign-runner.js";
+import { getUser, requireRoles } from "../lib/auth.js";
 import { enqueueCampaign } from "../worker/queue.js";
 
 export const MAX_BULK_SIZE = 50;
@@ -70,6 +69,7 @@ export async function campaignRoutes(app: FastifyInstance) {
 
   app.post("/filter-leads", async (req, reply) => {
     const user = getUser(req);
+    requireRoles(user, [Role.ADMIN, Role.MANAGER]);
     const f = filterSchema.parse(req.body);
     const where = buildLeadWhere(f, user.id, user.role);
     const leads = await prisma.lead.findMany({
@@ -98,6 +98,7 @@ export async function campaignRoutes(app: FastifyInstance) {
 
   app.post("/prepare", async (req, reply) => {
     const user = getUser(req);
+    requireRoles(user, [Role.ADMIN, Role.MANAGER]);
     const body = prepareSchema.parse(req.body);
 
     let leads;
@@ -142,14 +143,15 @@ export async function campaignRoutes(app: FastifyInstance) {
 
   app.post("/:id/execute", async (req, reply) => {
     const user = getUser(req);
+    requireRoles(user, [Role.ADMIN, Role.MANAGER]);
     const { id } = req.params as { id: string };
     const campaign = await prisma.campaign.findUnique({
       where: { id },
       include: { recipients: true },
     });
     if (!campaign) return reply.status(404).send({ error: "Not found" });
-    if (campaign.sentById !== user.id && user.role === "USER") {
-      return reply.status(403).send({ error: "Forbidden" });
+    if (campaign.sentById !== user.id && user.role !== Role.ADMIN) {
+      return reply.status(403).send({ error: "Only the campaign owner or admin can execute" });
     }
 
     await prisma.campaign.update({

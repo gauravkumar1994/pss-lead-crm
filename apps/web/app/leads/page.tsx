@@ -203,6 +203,8 @@ export default function LeadsPage() {
     load();
   }
 
+  const isSalesUser = role === "USER";
+
   return (
     <>
       {callLead && (
@@ -211,6 +213,11 @@ export default function LeadsPage() {
           onClose={() => setCallLead(null)}
           onSaved={() => load()}
         />
+      )}
+      {isSalesUser && (
+        <p className="alert-info" style={{ marginBottom: "1rem" }}>
+          Sirf aapko <strong>assigned leads</strong> dikh rahi hain. Admin sab users ki activity dashboard par dekhta hai.
+        </p>
       )}
       <div className="filter-bar">
         <div className="form-row">

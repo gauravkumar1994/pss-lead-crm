@@ -63,6 +63,21 @@ enum DeliveryStatus {
   SKIPPED
 }
 
+enum BulkBatchStatus {
+  PENDING
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+enum BulkSendStatus {
+  PENDING
+  SENT
+  FAILED
+  SKIPPED
+}
+
 model User {
   id           String    @id @default(cuid())
   userCode     String    @unique @map("user_code")
@@ -85,8 +100,82 @@ model User {
   whatsappIntegration UserWhatsAppIntegration?
   campaignRecipients CampaignRecipient[]
   messageTemplates   MessageTemplate[]
+  bulkProfile       UserBulkProfile?
+  bulkBatches       BulkBatch[]
 
   @@map("users")
+}
+
+model UserBulkProfile {
+  id            String    @id @default(cuid())
+  userId        String    @unique @map("user_id")
+  // Admin-controlled toggle — only when true does the worker pick up this user
+  enabled       Boolean   @default(false)
+  // Daily safety cap across all batches for this user
+  dailyTarget   Int       @default(50)              @map("daily_target")
+  // Minimum gap between two consecutive sends per user (BEAST default 18 min)
+  gapMinutes    Int       @default(18)              @map("gap_minutes")
+  // Time window — admin sets per user (e.g. 9:00 to 21:00). Outside, worker idles.
+  startHour     Int       @default(9)               @map("start_hour")
+  endHour       Int       @default(21)              @map("end_hour")
+  // Running counters
+  sentToday     Int       @default(0)               @map("sent_today")
+  lastSentDate  DateTime?                            @map("last_sent_date")
+  lastSentAt    DateTime?                            @map("last_sent_at")
+  notes         String?
+  createdAt     DateTime  @default(now())            @map("created_at")
+  updatedAt     DateTime  @updatedAt                 @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_bulk_profiles")
+}
+
+model BulkBatch {
+  id           String          @id @default(cuid())
+  batchCode    String          @unique @map("batch_code")
+  userId       String          @map("user_id")
+  name         String
+  status       BulkBatchStatus @default(PENDING)
+  total        Int             @default(0)
+  sent         Int             @default(0)
+  failed       Int             @default(0)
+  skipped      Int             @default(0)
+  message      String
+  mediaUrl     String?         @map("media_url")
+  source       String?
+  createdAt    DateTime        @default(now()) @map("created_at")
+  startedAt    DateTime?       @map("started_at")
+  completedAt  DateTime?       @map("completed_at")
+
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipients BulkRecipient[]
+
+  @@index([userId, status])
+  @@index([status])
+  @@map("bulk_batches")
+}
+
+model BulkRecipient {
+  id           String         @id @default(cuid())
+  batchId      String         @map("batch_id")
+  mobile       String
+  name         String?
+  city         String?
+  custom1      String?
+  custom2      String?
+  personalized String?
+  status       BulkSendStatus @default(PENDING)
+  error        String?
+  messageId    String?        @map("message_id")
+  sentAt       DateTime?      @map("sent_at")
+  retries      Int            @default(0)
+
+  batch BulkBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  @@index([batchId, status])
+  @@index([status])
+  @@map("bulk_recipients")
 }
 
 model MessageTemplate {

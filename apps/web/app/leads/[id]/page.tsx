@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { usePageTitle } from "@/lib/page-title-context";
@@ -41,9 +41,11 @@ type UserOpt = { id: string; fullName: string };
 
 export default function LeadDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const setPageTitle = usePageTitle();
   const { role, ready: authReady } = useClientAuth();
   const [lead, setLead] = useState<LeadDetail | null>(null);
+  const [accessError, setAccessError] = useState("");
   const [tab, setTab] = useState<"info" | "activity" | "calls">("info");
   const [remark, setRemark] = useState({ remarkType: "General", content: "", nextDate: "" });
   const [showCall, setShowCall] = useState(false);
@@ -52,11 +54,22 @@ export default function LeadDetailPage() {
   const [assignId, setAssignId] = useState("");
 
   function load() {
-    api<LeadDetail>(`/leads/${id}`).then(setLead);
+    setAccessError("");
+    api<LeadDetail>(`/leads/${id}`)
+      .then(setLead)
+      .catch((e) => {
+        const msg = e instanceof Error ? e.message : "Lead load failed";
+        setAccessError(msg);
+        // Forbidden / not found → bounce back to list
+        if (/forbidden|not found/i.test(msg)) {
+          setTimeout(() => router.push("/leads"), 1200);
+        }
+      });
   }
 
   useEffect(() => {
     if (id) load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   useEffect(() => {
@@ -92,7 +105,17 @@ export default function LeadDetailPage() {
     load();
   }
 
-  if (!lead) return <p>Loading…</p>;
+  if (!lead) {
+    return (
+      <>
+        {accessError ? (
+          <div className="alert-error">{accessError} — Redirecting…</div>
+        ) : (
+          <p>Loading…</p>
+        )}
+      </>
+    );
+  }
 
   return (
     <>

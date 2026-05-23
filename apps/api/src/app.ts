@@ -12,7 +12,10 @@ import { userRoutes } from "./routes/users.js";
 import { followupRoutes } from "./routes/followups.js";
 import { templateRoutes } from "./routes/templates.js";
 import { mediaRoutes, serveMediaFile } from "./routes/media.js";
+import { bulkAutomationRoutes } from "./routes/bulk-automation.js";
+import { adminDbRoutes } from "./routes/admin-db.js";
 import { startCampaignWorker } from "./worker/queue.js";
+import { startBulkAutomationWorker } from "./worker/bulk-automation.js";
 
 export async function buildApp() {
   const app = Fastify({ logger: true });
@@ -65,8 +68,11 @@ export async function buildApp() {
   await app.register(followupRoutes, { prefix: "/followups" });
   await app.register(templateRoutes, { prefix: "/templates" });
   await app.register(mediaRoutes, { prefix: "/media" });
+  await app.register(bulkAutomationRoutes, { prefix: "/bulk-automation" });
+  await app.register(adminDbRoutes, { prefix: "/admin-db" });
 
   startCampaignWorker();
+  startBulkAutomationWorker();
 
   return app;
 }

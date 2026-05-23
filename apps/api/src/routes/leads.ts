@@ -277,10 +277,20 @@ export async function leadRoutes(app: FastifyInstance) {
   });
 
   app.patch("/:id", async (req, reply) => {
+    const user = getUser(req);
     const { id } = req.params as { id: string };
     const body = createLeadSchema.partial().parse(req.body);
     const existing = await prisma.lead.findUnique({ where: { id } });
     if (!existing) return reply.status(404).send({ error: "Not found" });
+
+    if (user.role === Role.USER && existing.assignedUserId !== user.id) {
+      return reply.status(403).send({ error: "You can only edit your own assigned leads" });
+    }
+
+    // Sales users cannot reassign leads via PATCH (use /assign for admin/manager)
+    if (user.role === Role.USER && body.assignedUserId && body.assignedUserId !== user.id) {
+      return reply.status(403).send({ error: "Only admin can reassign leads" });
+    }
 
     const lead = await prisma.lead.update({
       where: { id },
@@ -299,6 +309,9 @@ export async function leadRoutes(app: FastifyInstance) {
     const body = remarkSchema.parse(req.body);
     const lead = await prisma.lead.findUnique({ where: { id } });
     if (!lead) return reply.status(404).send({ error: "Not found" });
+    if (user.role === Role.USER && lead.assignedUserId !== user.id) {
+      return reply.status(403).send({ error: "You can only add remarks on your own assigned leads" });
+    }
 
     const activity = await prisma.activity.create({
       data: {

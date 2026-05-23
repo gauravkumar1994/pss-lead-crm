@@ -136,6 +136,67 @@ export async function dashboardRoutes(app: FastifyInstance) {
       }));
     }
 
+    const activityWhere =
+      user.role === Role.USER
+        ? { userId: user.id }
+        : {};
+
+    const recentActivities = await prisma.activity.findMany({
+      where: activityWhere,
+      orderBy: { createdAt: "desc" },
+      take: user.role === Role.USER ? 15 : 40,
+      include: {
+        user: { select: { fullName: true, role: true } },
+        lead: { select: { leadCode: true, name: true } },
+      },
+    });
+
+    let teamUserReport: {
+      userId: string;
+      userCode: string;
+      fullName: string;
+      role: string;
+      activeLeads: number;
+      callsToday: number;
+      waToday: number;
+    }[] = [];
+
+    if (user.role !== Role.USER) {
+      const salesUsers = await prisma.user.findMany({
+        where: { status: "active" },
+        select: { id: true, userCode: true, fullName: true, role: true },
+        orderBy: { fullName: "asc" },
+      });
+      teamUserReport = await Promise.all(
+        salesUsers.map(async (u) => {
+          const [activeLeads, callsToday, waToday] = await Promise.all([
+            prisma.lead.count({
+              where: { assignedUserId: u.id, status: "active" },
+            }),
+            prisma.callLog.count({
+              where: { userId: u.id, ...callDayWhere },
+            }),
+            prisma.activity.count({
+              where: {
+                userId: u.id,
+                type: ActivityType.WHATSAPP,
+                createdAt: { gte: startOfDay, lte: endOfDay },
+              },
+            }),
+          ]);
+          return {
+            userId: u.id,
+            userCode: u.userCode,
+            fullName: u.fullName,
+            role: u.role,
+            activeLeads,
+            callsToday,
+            waToday,
+          };
+        })
+      );
+    }
+
     return {
       totalLeads,
       convertedLeads,
@@ -150,6 +211,23 @@ export async function dashboardRoutes(app: FastifyInstance) {
       teamCalls,
       myWhatsAppToday,
       bulkCampaignsActive,
+      recentActivities: recentActivities.map((a) => ({
+        id: a.id,
+        type: a.type,
+        content: a.content,
+        remarkType: a.remarkType,
+        createdAt: a.createdAt,
+        userName: a.user.fullName,
+        userRole: a.user.role,
+        leadCode: a.lead.leadCode,
+        leadName: a.lead.name,
+      })),
+      viewAllTeam: user.role !== Role.USER,
+      teamUserReport,
+      scopeLabel:
+        user.role === Role.USER
+          ? "Your assigned leads only"
+          : "All users — team overview (SalesNayak style)",
     };
   });
 }

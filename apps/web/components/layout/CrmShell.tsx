@@ -14,15 +14,20 @@ const TITLES: Record<string, string> = {
   "/pipeline": "Pipeline",
   "/quick-send": "Quick Send",
   "/bulk": "Bulk WhatsApp",
+  "/bulk-automation": "Smart Bulk Automation",
+  "/bulk-automation/profiles": "Bulk Permissions",
   "/campaigns": "Campaign History",
   "/templates": "Message Templates",
   "/reports": "Call Reports",
-  "/settings": "WhatsApp API",
+  "/settings": "My WhatsApp",
+  "/settings/team": "Team WhatsApp API",
   "/users": "User Management",
+  "/admin/database": "Database Panel",
 };
 
 function defaultTitle(pathname: string) {
   if (pathname.startsWith("/leads/") && pathname !== "/leads") return "Lead Details";
+  if (pathname.startsWith("/bulk-automation/batches/")) return "Batch Details";
   return TITLES[pathname] ?? "PSS SOLUTION";
 }
 

@@ -9,6 +9,7 @@ import {
   useClientAuth,
   type AuthUser,
   canManageUsers,
+  canManageWhatsAppApi,
 } from "@/lib/auth-store";
 
 const NAV = [
@@ -17,12 +18,26 @@ const NAV = [
   { href: "/followups", label: "Follow-ups", short: "Follow" },
   { href: "/pipeline", label: "Pipeline", short: "Pipe" },
   { href: "/quick-send", label: "Quick Send", short: "Quick" },
-  { href: "/bulk", label: "Bulk WhatsApp", short: "Bulk", highlight: true },
-  { href: "/campaigns", label: "Campaign History", short: "Camp" },
+  { href: "/bulk", label: "Bulk WhatsApp", short: "Bulk", highlight: true, adminOnly: true },
+  { href: "/bulk-automation", label: "Smart Bulk Automation", short: "Smart", highlight: true },
+  {
+    href: "/bulk-automation/profiles",
+    label: "Bulk Permissions",
+    short: "Perm",
+    adminOnly: true,
+  },
+  { href: "/campaigns", label: "Campaign History", short: "Camp", adminOnly: true },
   { href: "/templates", label: "Templates", short: "Tmpl" },
   { href: "/reports", label: "Call Reports", short: "Calls" },
-  { href: "/settings", label: "WhatsApp API", short: "API" },
+  { href: "/settings", label: "My WhatsApp", short: "WA" },
+  {
+    href: "/settings/team",
+    label: "Team WhatsApp API",
+    short: "Team WA",
+    whatsappAdminOnly: true,
+  },
   { href: "/users", label: "Users", short: "Users", adminOnly: true },
+  { href: "/admin/database", label: "Database Panel", short: "DB", adminOnly: true },
 ];
 
 export function AppShell({
@@ -82,9 +97,17 @@ export function AppShell({
     router.push("/login");
   }
 
-  const navItems = NAV.filter(
-    (n) => !n.adminOnly || (authReady && user && canManageUsers(user.role))
-  );
+  const navItems = NAV.filter((n) => {
+    if (!authReady || !user) {
+      return !n.adminOnly && !("whatsappAdminOnly" in n && n.whatsappAdminOnly);
+    }
+    if (n.href === "/users") return canManageUsers(user.role);
+    if ("whatsappAdminOnly" in n && n.whatsappAdminOnly) {
+      return canManageWhatsAppApi(user.role);
+    }
+    if (!n.adminOnly) return true;
+    return user.role === "ADMIN" || user.role === "MANAGER";
+  });
 
   return (
     <div className="app-shell">

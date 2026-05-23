@@ -32,6 +32,11 @@ export function canManageUsers(role: string) {
   return role === "ADMIN";
 }
 
+/** Admin-only: assign & edit WhatsApp API for all users (SalesNayak style) */
+export function canManageWhatsAppApi(role: string) {
+  return role === "ADMIN";
+}
+
 export function canAssignLeads(role: string) {
   return role === "ADMIN" || role === "MANAGER";
 }

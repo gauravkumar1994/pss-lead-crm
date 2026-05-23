@@ -10,7 +10,13 @@ export type IntegrationConfig = {
 export type SendMessageInput = {
   to: string;
   message: string;
+  /** Single media URL (backward-compat, used by Quick Send + legacy bulk). */
   mediaUrl?: string | null;
+  /** Multiple media URLs (Smart Bulk Automation can send N photos per recipient).
+   *  When set and non-empty, adapter must loop and send each one separately —
+   *  caption on the FIRST item only, ~1s delay between sends.
+   *  If both `mediaUrl` and `mediaUrls` are set, `mediaUrls` wins. */
+  mediaUrls?: string[];
 };
 
 export type SendResult = {
@@ -18,4 +24,6 @@ export type SendResult = {
   messageId?: string;
   error?: string;
   raw?: unknown;
+  /** When multiple media sent, how many of them succeeded */
+  mediaCount?: number;
 };
