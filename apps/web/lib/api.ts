@@ -96,3 +96,32 @@ export async function apiUpload<T>(path: string, formData: FormData): Promise<T>
   if (!res.ok) throw new Error(data.error ?? res.statusText);
   return data as T;
 }
+
+/** Download a file (CSV, etc.) from API with auth. Triggers browser save dialog. */
+export async function apiDownload(path: string, filename: string): Promise<void> {
+  const token = getToken();
+  const headers: HeadersInit = {};
+  if (token) (headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
+
+  let res: Response;
+  try {
+    res = await fetchWithRetry(`${API}${path}`, { headers, cache: "no-store" });
+  } catch {
+    throw new Error("Download fail — server start ho raha ho sakta hai, thodi der baad try karo.");
+  }
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error((data as { error?: string }).error ?? `Export failed (${res.status})`);
+  }
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}

@@ -387,10 +387,12 @@ export async function adminDbRoutes(app: FastifyInstance) {
     const csv = buildCsv(headerLabels, rows.map((r) => cols.map((c) => csvCell(r[c]))));
 
     const filename = `${key}-${new Date().toISOString().slice(0, 10)}.csv`;
+    // UTF-8 BOM so Excel on Windows opens Hindi/special chars correctly
+    const body = `\uFEFF${csv}`;
     return reply
       .header("Content-Type", "text/csv; charset=utf-8")
       .header("Content-Disposition", `attachment; filename="${filename}"`)
-      .send(csv);
+      .send(body);
   });
 }
 

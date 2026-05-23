@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
+import { api, apiDownload } from "@/lib/api";
 import { useClientAuth, canManageWhatsAppApi } from "@/lib/auth-store";
 
 type DisplayColumn = { key: string; label: string };
@@ -41,33 +41,6 @@ function formatCell(value: unknown): string {
     }
   }
   return s;
-}
-
-function getApiBase(): string {
-  return process.env.NEXT_PUBLIC_API_URL ?? "/api";
-}
-
-function getToken(): string {
-  if (typeof window === "undefined") return "";
-  return localStorage.getItem("auth-token") ?? "";
-}
-
-async function downloadCsv(key: string, label: string, search: string, showAll: boolean) {
-  const qs = new URLSearchParams();
-  if (search) qs.set("search", search);
-  if (showAll) qs.set("showAllColumns", "true");
-  const url = `${getApiBase()}/admin-db/tables/${key}/export${qs.toString() ? `?${qs.toString()}` : ""}`;
-  const token = getToken();
-  const res = await fetch(url, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
-  if (!res.ok) throw new Error(`Export failed (${res.status})`);
-  const blob = await res.blob();
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `${key}-${new Date().toISOString().slice(0, 10)}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  void label;
 }
 
 export default function AdminDatabasePage() {
@@ -110,8 +83,15 @@ export default function AdminDatabasePage() {
     setError("");
     setInfo("");
     try {
-      await downloadCsv(activeKey, data.label, search, showAll);
-      setInfo(`${data.label} CSV download ho gaya (max 50,000 rows). Bade dataset ke liye search filter use karke chhote chunks export karo.`);
+      const qs = new URLSearchParams();
+      if (search) qs.set("search", search);
+      if (showAll) qs.set("showAllColumns", "true");
+      const path = `/admin-db/tables/${activeKey}/export${qs.toString() ? `?${qs.toString()}` : ""}`;
+      const filename = `${activeKey}-${new Date().toISOString().slice(0, 10)}.csv`;
+      await apiDownload(path, filename);
+      setInfo(
+        `${data.label} CSV download ho gaya (max 50,000 rows). Bade dataset ke liye search filter use karke chhote chunks export karo.`
+      );
     } catch (e) {
       setError(e instanceof Error ? e.message : "Export failed");
     } finally {
