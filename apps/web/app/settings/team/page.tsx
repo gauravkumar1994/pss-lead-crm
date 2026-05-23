@@ -116,7 +116,7 @@ export default function TeamWhatsAppPage() {
         provider,
         instanceId: fields.instanceId.trim(),
         baseUrl: fields.baseUrl.trim() || null,
-        phone: fields.phone.trim() || undefined,
+        phone: fields.phone.trim() || null,
         dailyLimit: Number(fields.dailyLimit) || 1000,
         status: fields.status,
       };
