@@ -247,6 +247,13 @@ function flattenRow(key: TableKey, raw: Record<string, unknown>): Record<string,
     delete row.user;
   }
 
+  // Campaign model uses sentBy (not user)
+  if (row.sentBy && typeof row.sentBy === "object") {
+    const u = row.sentBy as { fullName?: string };
+    row.userName = u.fullName ?? "—";
+    delete row.sentBy;
+  }
+
   // Flatten "assignedUser" (leads.assignedUserId)
   if (row.assignedUser && typeof row.assignedUser === "object") {
     const u = row.assignedUser as { fullName?: string };
@@ -508,7 +515,7 @@ async function runQuery(
         take,
         skip,
         orderBy: { createdAt: "desc" },
-        include: { user: { select: userJoinSelect } },
+        include: { sentBy: { select: userJoinSelect } },
       });
       const total = await prisma.campaign.count({ where });
       return [items, total];
